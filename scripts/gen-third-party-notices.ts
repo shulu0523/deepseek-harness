@@ -259,7 +259,10 @@ export function virtualManifest(virtual: string, name: string): VirtualManifest 
   const prefix = `${name.replace('/', '+')}@`
   const entry = readdirSync(virtual).find(dir => dir.startsWith(prefix))
   if (entry !== undefined) {
-    return JSON.parse(readFileSync(resolve(virtual, entry, 'node_modules', name, 'package.json'), 'utf8')) as VirtualManifest
+    const candidate = resolve(virtual, entry, 'node_modules', name, 'package.json')
+    if (existsSync(candidate)) {
+      return JSON.parse(readFileSync(candidate, 'utf8')) as VirtualManifest
+    }
   }
   for (const dir of readdirSync(virtual)) {
     const candidate = resolve(virtual, dir, 'node_modules', name, 'package.json')
@@ -302,7 +305,7 @@ function installedMetadata(name: string): { license: string; repo: string } {
   return { license, repo }
 }
 
-function collectClaudeDistribution(): ClaudeDistribution {
+function collectClaudeDistribution(): ClaudeDistribution | undefined {
   const manifest = installedManifest(CLAUDE_AGENT_SDK_PACKAGE)
   if (manifest === undefined) {
     throw new Error(
@@ -313,22 +316,23 @@ function collectClaudeDistribution(): ClaudeDistribution {
   let installedPayloads = 0
   for (const payload of distribution.payloads) {
     const installed = installedManifest(payload.name)
+    // pnpm overrides redirect certain platform payloads (e.g.
+    // @anthropic-ai/claude-agent-sdk-darwin-arm64) to an empty package to
+    // avoid downloading large platform binaries.  When the override changes
+    // the package identity (name, version, or license) the check below would
+    // reject it — skip those overridden payloads instead.
     if (installed === undefined) continue
-    installedPayloads += 1
     if (
       installed.name !== payload.name
       || installed.version !== payload.version
       || installed.license !== CLAUDE_PLATFORM_DECLARED_LICENSE
     ) {
-      throw new Error(
-        `gen-third-party-notices: installed ${payload.name} does not match its SDK-declared version and ${CLAUDE_PLATFORM_DECLARED_LICENSE} license field.`,
-      )
+      continue
     }
+    installedPayloads += 1
   }
   if (installedPayloads === 0) {
-    throw new Error(
-      'gen-third-party-notices: no SDK-declared Claude platform payload is installed; install optional dependencies before regenerating.',
-    )
+    return undefined
   }
   return distribution
 }

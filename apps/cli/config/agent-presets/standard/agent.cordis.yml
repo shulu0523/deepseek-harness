@@ -242,6 +242,30 @@
   config:
     allowParallelInProgress: true
 
+# ── boot greeting ──────────────────────────────────────────────────────────
+# Console-only greeting, logged once when this preset first mounts (process
+# startup for the web/standard mode). Provides no service and injects nothing,
+# so it needs no realm; `dsh-tool-todo` above is the same shape.
+- id: plugin-greet-onboot
+  name: '@deepseek-ai/plugin-greet-onboot'
+
+# ── notification capability seam ────────────────────────────────────────────
+# `notify` is a provided service, so the provider needs an entry-local realm;
+# the consumer tool sits in the same realm to resolve `ctx.notify`. Only ONE
+# provider may be mounted at a time - swap `provider-notify-console` for
+# `provider-notify-file` (adding a `logPath` config) to change the backend.
+- id: notify
+  name: cordis:group
+  group: true
+  isolate:
+    notify: true
+  config:
+    - id: provider-notify-console
+      name: '@deepseek-ai/dsh-notify-provider-console'
+
+    - id: tool-notify
+      name: '@deepseek-ai/dsh-tool-notify'
+
 # The `web` service and its search provider stay in the host composition; only
 # the model-facing tool is per-session.
 - id: tool-web

@@ -27,6 +27,12 @@ linkWorkspacePackages: true
 overrides:
   '@deepseek-ai/cosmokit': 'link:vendor/cosmokit'
   '@deepseek-ai/schemastery': 'link:vendor/schemastery'
+  # These platform-native binaries are >70MB each and only needed when running
+  # the codex / claude-code subagent locally on macOS. They are optional and not
+  # required by `dsh web`; replacing them with an empty package keeps installs
+  # fast and avoids the flaky large-tarball downloads. Revert if you need them.
+  '@openai/codex-darwin-arm64': 'npm:empty-npm-package@1.0.0'
+  '@anthropic-ai/claude-agent-sdk-darwin-arm64': 'npm:empty-npm-package@1.0.0'
 
 peerDependencyRules:
   allowedVersions:
