@@ -41,6 +41,7 @@
       "@deepseek-ai/dsh-invariants": ["./packages/runtime-diagnostics/invariants/src/index.ts"],
       "@deepseek-ai/dsh-tool-call-timeout-policy": ["./packages/guard/timeout-policy/src"],
       "@deepseek-ai/plugin-greet-onboot": ["./packages/extensions/plugin-greet-onboot/src"],
+      "@deepseek-ai/plugin-agent-monitor": ["./packages/extensions/plugin-agent-monitor/src"],
       // Notification capability seam (packages/notify/*): the dsh-* wildcard
       // below cannot map these - the provider/tool dir names drop the `notify-`
       // prefix, so they get explicit entries here.

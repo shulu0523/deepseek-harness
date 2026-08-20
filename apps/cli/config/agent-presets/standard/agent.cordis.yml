@@ -249,6 +249,12 @@
 - id: plugin-greet-onboot
   name: '@deepseek-ai/plugin-greet-onboot'
 
+# ── agent monitor ───────────────────────────────────────────────────────────
+# Agent behavior monitor, logs agent lifecycle, steps, errors, and tool calls.
+# Listens only (no service provision, no injection), so no realm needed.
+- id: plugin-agent-monitor
+  name: '@deepseek-ai/plugin-agent-monitor'
+
 # ── notification capability seam ────────────────────────────────────────────
 # `notify` is a provided service, so the provider needs an entry-local realm;
 # the consumer tool sits in the same realm to resolve `ctx.notify`. Only ONE

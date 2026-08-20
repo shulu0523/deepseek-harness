@@ -6,6 +6,7 @@
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
+import type { Scoped } from '@deepseek-ai/dsh-scope'
 import type { NotifyMessage } from './types.ts'
 
 export type { NotifyLevel, NotifyMessage } from './types.ts'
@@ -13,6 +14,12 @@ export type { NotifyLevel, NotifyMessage } from './types.ts'
 declare module '@deepseek-ai/cordis' {
   interface Context {
     notify: NotifyService
+  }
+  interface Events {
+    // 通知发送后触发
+    'notify/sent'(this: Scoped<NotifyService>, message: NotifyMessage): void
+    // 通知发送失败时触发，waterfall 允许监听器决定是否重试
+    'notify/error'(this: Scoped<NotifyService>, message: NotifyMessage, error: Error, next: () => boolean): boolean
   }
 }
 

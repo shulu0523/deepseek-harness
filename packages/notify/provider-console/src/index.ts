@@ -16,6 +16,7 @@ export class ConsoleNotifyProvider extends NotifyService {
     if (message.meta) {
       console.log(`  meta: ${JSON.stringify(message.meta)}`)
     }
+    this.ctx.emit('notify/sent', message)
   }
 }
 
