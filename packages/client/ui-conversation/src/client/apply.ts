@@ -47,9 +47,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 }
 
-/** Services required by the conversation plugin. */
+/** Services required by the conversation plugin. `layout` is optional: the
+ * detail-panel open/close hooks degrade to no-ops when no layout host (such as
+ * the WorkBuddy shell that replaces ui-layout) provides it, while the
+ * conversation projection infrastructure (chat view + node Definitions) still
+ * registers. */
 export const inject = [
-  'slots', 'layout', 'sessions', 'workspaces', 'locale', 'connection', 'remote', 'settingsScope',
+  'slots', 'sessions', 'workspaces', 'locale', 'connection', 'remote', 'settingsScope',
   'conversationEvents', 'conversationViews',
 ]
 
@@ -394,7 +398,7 @@ export function apply(ctx: Context): void {
       return {
         openDetails: (target) => {
           actions.select(target)
-          layout.openDetails()
+          layout?.openDetails()
         },
         fileMentions: owner => ctx.get('chatFileMentions')?.forClosing(owner),
         openFile: (path) => {
@@ -451,7 +455,7 @@ export function apply(ctx: Context): void {
     },
     store: chatStore,
     inject: (): DetailsInjected => ({
-      closeDetails: () => { layout.closeDetails() },
+      closeDetails: () => { layout?.closeDetails() },
     }),
   }, DetailsPanel)
 

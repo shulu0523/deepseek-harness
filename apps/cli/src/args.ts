@@ -168,6 +168,21 @@ export function parseDshArgs(argv: readonly string[], version: string): DshInvoc
       resolved = resolveBoot(web, 'web', options, args)
     })
 
+  const webWorkbuddy = program.command('web-workbuddy').description('boot the WorkBuddy-style web profile (alias of --profile web-workbuddy); the web app\'s own flags follow')
+  webWorkbuddy
+    .helpOption(false)
+    .allowUnknownOption()
+    .passThroughOptions()
+    .enablePositionalOptions()
+    .argument('[args...]', 'arguments for the web app (see: dsh web-workbuddy --help)')
+    .option('--patch <path>', 'extra patch-list overlay applied after the profile layer (repeatable)', collect)
+    .option('--dump-config', 'print the composed web-workbuddy-profile tree (with the user layer and any --patch) and exit')
+    .option('--dump-default-config', 'print the web-workbuddy profile\'s bundle layers (no user layer) and exit')
+    .action((args: string[], options: BootOptions) => {
+      rejectParentOptions('web-workbuddy')
+      resolved = resolveBoot(webWorkbuddy, 'web-workbuddy', options, args)
+    })
+
   const plugin = program.command('plugin').description('manage a profile\'s plugins by forwarding the remaining arguments to pnpm in the profile directory')
   plugin
     .requiredOption('--profile <name>', 'the profile whose plugins to manage (initialized on first use)')
